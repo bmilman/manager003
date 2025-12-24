@@ -23,10 +23,14 @@ struct CodeBreakerView: View {
                 }
             }
             
-            CodeView(code: game.masterCode
-//                    , selection: $selection, ancillaryView: { Text ("0:03") .font ( .title)
-//            }
-            )
+            CodeView(code: game.masterCode) {
+                ElapsedTime (startTime: game.startTime, endTime: game.endTime)
+                    .monospaced()
+            }
+ 
+            
+            //                    , selection: $selection, ancillaryView: { Text ("0:03") .font ( .title)}
+            
             
             ScrollView{
                 if !game.isOver {

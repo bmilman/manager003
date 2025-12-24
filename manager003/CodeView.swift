@@ -45,10 +45,10 @@ struct CodeView<AncillaryView>: View  where AncillaryView: View {
                             if selection == index, code.kind == .guess{
                                 Circle()
                                     .foregroundColor(Color.gray(0.85))
-                                    .matchedGeometryEffect(id: "selection", in: selectionNameSpace)
+                                    //.matchedGeometryEffect(id: "selection", in: selectionNameSpace)
                             }
                         }
-                        .animation(selection, value: selectionNameSpace)
+                       // .animation(selection, value: selectionNameSpace)
                     }
                     .overlay {
                        Rectangle()
