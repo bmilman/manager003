@@ -8,11 +8,119 @@
 import SwiftUI
 
 struct GameChooserView: View {
+    
+    //MARK: Data owned by me
+    
+    @State private var games : [Codebreaker] = []
+    @State private var selection: Codebreaker? = nil
+    
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        NavigationSplitView {
+          
+            
+            List(selection: $selection){
+                ForEach(games)
+                { game in
+                    
+                    NavigationLink (value: game) {
+                        GameSummary(game: game)
+                    }
+                    
+                    NavigationLink (value: game.masterCode.pegs) {
+                        Text ("Cheat")
+                    }
+//fo Mac and Ipad, right mouse click or press AND hold
+                    .contextMenu{
+                        Button ("Delete", systemImage: "minus.circle", role: .destructive){
+                            games.removeAll {$0 == game}
+                        }
+                    }
+ 
+                }
+                .onDelete { offsets in
+                    games.remove (atOffsets: offsets)
+                }
+                .onMove{
+                    offsets, destination in
+                    games.move(fromOffsets: offsets, toOffset: destination)
+                    
+                }
+            }
+            .onChange(of: games){
+                
+            }
+            .navigationTitle("CodeBreaker")
+//            .navigationDestination(for: Codebreaker.self) { game in
+//                 CodeBreakerView(game: game)
+//                    .navigationTitle(game.name)
+//             }
+            
+            .navigationDestination(for: [Peg].self) { pegs in
+               
+                PegChooser(choices: pegs, onChoose: nil)
+            }
+        } detail: {
+            if let selection{
+                CodeBreakerView(game: selection)
+                   .navigationTitle(selection.name)
+                   .navigationBarTitleDisplayMode(.inline)
+            } else {
+                Text( "Choose a game")
+            }
+        }
+                
+ 
+            
+            .listStyle(.grouped)
+            .toolbar{
+                EditButton()
+            }
+        
+        
+            .onAppear{
+                        games.append(Codebreaker(name: " Trois", pegChoices: [ Color( .brown), Color(.orange),  .yellow   ]))
+                        games.append(  Codebreaker(name: "Cinq",pegChoices: [ Color( .red), Color(.cyan), .black, .yellow, .green   ]))
+                        games.append(  Codebreaker(name: "Quatre",pegChoices: [ Color( .blue), Color(.orange), .black, .green   ]))
+                selection = games.first
+                    }
+
+        }
+        
+        
+        
+        
+        
     }
-}
+
 
 #Preview {
     GameChooserView()
 }
+   
+    
+    //  MARK:  for Struc
+//                Section ("GAMES"){
+//                    ForEach  ( $games, id: \.pegChoices, editActions: [.delete, .move]){ $game in
+//
+//                        NavigationLink{
+//                            CodeBreakerView(game: $game)                        }
+//                        label: {
+//                            GameSummary (game: game)
+//                        }
+//                    }
+//                }
+//
+//                Section (header: Image(systemName: "face.smiling") .font(.title)){
+//                    Text("hello")
+//                    Text("buy")
+//                }
+
+
+
+    //                    NavigationLink{
+    //                        CodeBreakerView(game: game)
+    //                    }
+    //                    label: {
+    //                        GameSummary (game: game)
+    //                    }

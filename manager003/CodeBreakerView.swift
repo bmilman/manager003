@@ -9,7 +9,13 @@ import SwiftUI
 
 struct CodeBreakerView: View {
    
-   @State private var game = Codebreaker()
+  
+//MARK: DATA SHARED WITH ME
+   // @Binding  var - for structure
+   let  game: Codebreaker //for class
+  
+        //MARK: DATA OWNED BY ME
+    // @State private var game = Codebreaker()
     
    @State private var selection: Int = 0
     
@@ -39,16 +45,17 @@ struct CodeBreakerView: View {
                 }
                     
                     
-                ForEach ( game.attempts.indices.reversed(), id: \.self) {
-                    index in
-                    CodeView(code: game.attempts[index],
-                             ancillaryView: {
-                        if let matches = game.attempts[index].matches {
+                ForEach ( game.attempts.reversed()
+                          , id: \.pegs
+               ) {
+                    attempt in
+                    CodeView(code: attempt) {
+                        if let matches = attempt.matches {
                             MatchMarkers(matches: matches)
                         }
                         //MatchMarkers(matches: game.attempts[index].matches ?? [])
                     }
-                    )
+                    
                     .transition(AnyTransition.asymmetric(insertion: .move(edge: .top),
                                                          removal: .move(edge: .trailing))
                         
@@ -63,11 +70,20 @@ struct CodeBreakerView: View {
                     //.transition(.move(edge: .bottom))
             }
                 
-//            {peg in
-//       changePegAtSelection(to: peg)
-//            }
+               
         }
         .padding()
+        .toolbar{
+            ToolbarItem(placement: .primaryAction) {
+                Button ("Restart", systemImage: "arrow.circlepath") {game.restart()}
+
+            }
+            ToolbarItem{
+                ElapsedTime (startTime: game.startTime, endTime: game.endTime)
+                    .monospaced()
+                    .lineLimit(1)
+            }
+        }
             }
         
     func changePegAtSelection (to peg:Peg) {
@@ -120,5 +136,6 @@ extension Color {
 
 
 #Preview {
-    CodeBreakerView()
+   @Previewable @State  var game = Codebreaker(name: "PREVIEW", pegChoices: [.blue, .red, .purple])
+    CodeBreakerView(game: game)
 }
